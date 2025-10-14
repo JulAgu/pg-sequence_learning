@@ -2,11 +2,11 @@ import os
 import pickle
 import pyarrow.parquet as pq
 import torch
-from models.EncoderDecoderIndependentMLP import Encoder, Decoder
+from models.HybridModel import HybridArchiSimplified
 from datasets.dataOps import create_datasets, create_dataloaders
-from engine.Trainer import Trainer
+from engine.SimpleTrainer import Trainer
 
-EXPE_NAME = "01_non_physical_multiMLP_50_eps"
+EXPE_NAME = "BL2_yield_HM_100_eps"
 
 if __name__ == "__main__":
 
@@ -18,40 +18,27 @@ if __name__ == "__main__":
 
     data = {}
     for array in ["static_data", "before_ts", "after_ts", "target_ts", "mask_target", "cat_dicos"]:
-        with open(f"data/agrial_ts_wise/{array}.pkl", "rb") as f:
+        with open(f"data/big_agrial_ts_wise/{array}.pkl", "rb") as f:
             data[array] = pickle.load(f)
     table = pq.read_table("data/info_ts.parquet")
     ids = table.to_pandas().index.to_list()
 
     hyperparameters = {
-    # Static encoder parameters
-    "static_input_dim": 9,
+    # Model parameters
+    "input_dim": 9, # Number of static numerical and categorical static features
+    "input_dim_gru": 7, # Number of dynamic features
     "list_unic_cat": [len(dico.keys()) for dico in data["cat_dicos"].values()],
-    "embedding_dims": [100, 100, 100, 100],
-    "hidden_dim_static_encoder": 128,
-
-    # Dynamic encoder parameters
-    "dynamic_input_dim": 7,
-    "hidden_dim_dynamic_encoder": 256,
-    "first_decoder_input_dim": 4,
-    "gru_encoder_num_layers": 2,
-
-    # Decoder parameters
-    "gru_input_dim": 4,
-    "gru_hidden_dim": 256 + 128,  # hidden_dim_dynamic_encoder + hidden_dim_static_encoder
-    "stepwise_input_dim": 7,
-    "main_hidden_dim": 128,
-    "mask_hidden_dim": 128,
-    "output_dim": 4,
-    "gru_decoder_num_layers": 2,
+    "embedding_dims": [254, 254, 254, 254],
+    "gru_num_layers": 2,
+    "hidden_dim_gru": 256,
+    "hidden_dim": 512,
+    "output_dim": 1,
 
     # Training cycle parameters
     "batch_size": 64,
-    "teacher_forcing_ratio": 0.7,
     "max_norm": 1.0,
-    "learning_rate": 1e-4,
-    "num_epochs": 50,
-    "monotonicity_bool": False
+    "learning_rate": 1e-5,
+    "num_epochs": 100,
     }
 
     train_dataset, val_dataset, test_dataset = create_datasets(ids=ids,
@@ -62,6 +49,9 @@ if __name__ == "__main__":
                                                                mask_target=data["mask_target"],
                                                                train_size=0.6,
                                                                val_size=0.2,
+                                                               raw_data_folder="data/agrial_yield_mlp/",
+                                                               target_mode="yield",
+                                                               type_of_dataset="AgrialHybridDataset"
                                                                )
     
     train_loader, val_loader, test_loader = create_dataloaders(train_dataset,
@@ -69,37 +59,28 @@ if __name__ == "__main__":
                                                                test_dataset,
                                                                batch_size=hyperparameters["batch_size"])
 
-    encoder = Encoder(
-        static_input_dim=hyperparameters["static_input_dim"],
-        static_hidden_dim=hyperparameters["hidden_dim_static_encoder"],
+    model = HybridArchiSimplified(
+        input_dim=hyperparameters["input_dim"],
+        input_dim_gru=hyperparameters["input_dim_gru"],
         list_unic_cat=hyperparameters["list_unic_cat"],
         embedding_dims=hyperparameters["embedding_dims"],
-        dynamic_input_dim=hyperparameters["dynamic_input_dim"],
-        dynamic_hidden_dim=hyperparameters["hidden_dim_dynamic_encoder"],
-        first_decoder_input_dim=hyperparameters["first_decoder_input_dim"],
-        gru_num_layers=hyperparameters["gru_encoder_num_layers"]
-    )
-
-    decoder = Decoder(
-        gru_input_dim=hyperparameters["gru_input_dim"],
-        gru_hidden_dim=hyperparameters["gru_hidden_dim"],
-        stepwise_input_dim=hyperparameters["stepwise_input_dim"],
-        main_hidden_dim=hyperparameters["main_hidden_dim"],
-        output_dim=hyperparameters["output_dim"],
-        num_layers=hyperparameters["gru_decoder_num_layers"]
+        num_gru_layers=hyperparameters["gru_num_layers"],
+        hidden_dim_gru=hyperparameters["hidden_dim_gru"],
+        hidden_dim=hyperparameters["hidden_dim"],
+        output_dim=hyperparameters["output_dim"]
     )
 
     trainer = Trainer(
         exp_name=EXPE_NAME,
-        encoder=encoder,
-        decoder=decoder,
+        type_of_model="Hybrid",
+        model=model,
         hyperparameters=hyperparameters,
         train_dataloader=train_loader,
         val_dataloader=val_loader,
         checkpoints_path=f"checkpoints/{EXPE_NAME}",
         logs_path=f"logs/{EXPE_NAME}",
-        monotonicity_bool=hyperparameters["monotonicity_bool"],
-        device=device
+        means_std_path="data/agrial_yield_mlp/means_and_stds.pkl",
+        device=device,
     )
 
     trainer.train_loop()

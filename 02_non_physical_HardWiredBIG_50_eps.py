@@ -2,11 +2,11 @@ import os
 import pickle
 import pyarrow.parquet as pq
 import torch
-from models.EncoderDecoderIndependentMLP import Encoder, Decoder
+from models.EncoderDecoderHardMonoBig import Encoder, Decoder
 from datasets.dataOps import create_datasets, create_dataloaders
 from engine.Trainer import Trainer
 
-EXPE_NAME = "01_non_physical_multiMLP_50_eps"
+EXPE_NAME = "02_non_physical_HardWiredBIG_50_eps"
 
 if __name__ == "__main__":
 
@@ -43,6 +43,7 @@ if __name__ == "__main__":
     "main_hidden_dim": 128,
     "mask_hidden_dim": 128,
     "output_dim": 4,
+    "monotonic_indices": [0, 2, 3], # Example indices for monotonic MLPs
     "gru_decoder_num_layers": 2,
 
     # Training cycle parameters
@@ -86,6 +87,7 @@ if __name__ == "__main__":
         stepwise_input_dim=hyperparameters["stepwise_input_dim"],
         main_hidden_dim=hyperparameters["main_hidden_dim"],
         output_dim=hyperparameters["output_dim"],
+        monotonic_indices=hyperparameters["monotonic_indices"],
         num_layers=hyperparameters["gru_decoder_num_layers"]
     )
 

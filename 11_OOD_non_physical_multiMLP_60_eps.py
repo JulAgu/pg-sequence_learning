@@ -1,12 +1,13 @@
 import os
 import pickle
 import pyarrow.parquet as pq
+import pandas as pd
 import torch
 from models.EncoderDecoderIndependentMLP import Encoder, Decoder
-from datasets.dataOps import create_datasets, create_dataloaders
-from engine.Trainer import Trainer
+from datasets.dataOps import create_ood_datasets, create_dataloaders
+from engine.EntireTrainer import Trainer
 
-EXPE_NAME = "01_non_physical_multiMLP_50_eps"
+EXPE_NAME = "11_OOD_non_physical_multiMLP_60_eps"
 
 if __name__ == "__main__":
 
@@ -18,31 +19,34 @@ if __name__ == "__main__":
 
     data = {}
     for array in ["static_data", "before_ts", "after_ts", "target_ts", "mask_target", "cat_dicos"]:
-        with open(f"data/agrial_ts_wise/{array}.pkl", "rb") as f:
+        with open(f"data/big_agrial_ts_wise/{array}.pkl", "rb") as f:
             data[array] = pickle.load(f)
     table = pq.read_table("data/info_ts.parquet")
     ids = table.to_pandas().index.to_list()
+
+    ood_eliminate_train_val = pd.read_csv("data/ood/entire_ood_train.csv")["id"].to_list()
+    ood_test = pd.read_csv("data/ood/entire_ood_test.csv")["id"].to_list()
 
     hyperparameters = {
     # Static encoder parameters
     "static_input_dim": 9,
     "list_unic_cat": [len(dico.keys()) for dico in data["cat_dicos"].values()],
-    "embedding_dims": [100, 100, 100, 100],
-    "hidden_dim_static_encoder": 128,
+    "embedding_dims": [150, 150, 150, 150],
+    "hidden_dim_static_encoder": 256,
 
     # Dynamic encoder parameters
     "dynamic_input_dim": 7,
-    "hidden_dim_dynamic_encoder": 256,
-    "first_decoder_input_dim": 4,
+    "hidden_dim_dynamic_encoder": 384,
+    "first_decoder_input_dim": 11,
     "gru_encoder_num_layers": 2,
 
     # Decoder parameters
-    "gru_input_dim": 4,
-    "gru_hidden_dim": 256 + 128,  # hidden_dim_dynamic_encoder + hidden_dim_static_encoder
+    "gru_input_dim": 11,
+    "gru_hidden_dim": 384 + 256,  # hidden_dim_dynamic_encoder + hidden_dim_static_encoder
     "stepwise_input_dim": 7,
-    "main_hidden_dim": 128,
-    "mask_hidden_dim": 128,
-    "output_dim": 4,
+    "main_hidden_dim": 256,
+    "mask_hidden_dim": 256,
+    "output_dim": 11,
     "gru_decoder_num_layers": 2,
 
     # Training cycle parameters
@@ -50,19 +54,21 @@ if __name__ == "__main__":
     "teacher_forcing_ratio": 0.7,
     "max_norm": 1.0,
     "learning_rate": 1e-4,
-    "num_epochs": 50,
-    "monotonicity_bool": False
+    "num_epochs": 60,
     }
 
-    train_dataset, val_dataset, test_dataset = create_datasets(ids=ids,
-                                                               static_data=data["static_data"],
-                                                               before_ts=data["before_ts"],
-                                                               after_ts=data["after_ts"],
-                                                               target_ts=data["target_ts"],
-                                                               mask_target=data["mask_target"],
-                                                               train_size=0.6,
-                                                               val_size=0.2,
-                                                               )
+    train_dataset, val_dataset, test_dataset = create_ood_datasets(ids=ids,
+                                                                   static_data=data["static_data"],
+                                                                   before_ts=data["before_ts"],
+                                                                   after_ts=data["after_ts"],
+                                                                   target_ts=data["target_ts"],
+                                                                   mask_target=data["mask_target"],
+                                                                   ids_to_eliminate_of_train_validation=ood_eliminate_train_val,
+                                                                   test_ids=ood_test,
+                                                                   train_size=0.8,
+                                                                   val_size=0.2,
+                                                                   raw_data_folder="data/big_agrial_ts_wise/"
+                                                                   )
     
     train_loader, val_loader, test_loader = create_dataloaders(train_dataset,
                                                                val_dataset,
@@ -98,7 +104,10 @@ if __name__ == "__main__":
         val_dataloader=val_loader,
         checkpoints_path=f"checkpoints/{EXPE_NAME}",
         logs_path=f"logs/{EXPE_NAME}",
-        monotonicity_bool=hyperparameters["monotonicity_bool"],
+        monotonicity_bool=False,
+        static_bool=False,
+        dynamic_bool=False,
+        means_std_path="data/big_agrial_ts_wise/means_and_stds.pkl",
         device=device
     )
 
