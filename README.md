@@ -19,5 +19,5 @@ The available data is the one used for training models, i.e., the dataset constr
 ### Setting up the repository for exectuting the scripts
 Due to github limitations, data should be downloaded and transformed using dedicated scripts
 
-1. Download the dataset from : 
+1. Download the dataset from : https://huggingface.co/datasets/JulAgu/PG_S2S-Crop_development
 2. Create a ```/data/``` directory in the root of the project and place the dataset inside it.
