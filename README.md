@@ -9,15 +9,15 @@ To run the code from this repository, please ensure that your system meets the f
 - **Hardware Requirements**: Experiments were executed using an NVIDIA RTX A6000 GPU in a machine with 125 Go of RAM. Under this setup the more expensive models take **~24 hours** of training.
 
 ## Experiments
-Each experiment has two corresponding scripts: one (numbered) that corresponds to the training cycle and other (which is a Jupyter notebook called ```observing_*_.ipynb```) that allows the evaluation and analysis of the trained model. Baseline experiments are indicated by the ```BL``` prefix.
+Each experiment has two corresponding files: a numbered python script that corresponds to the training cycle and a Jupyter notebook called ```observing_*_.ipynb``` that allows the evaluation and analysis of the trained model. Baseline experiments are indicated by the ```BL``` prefix.
 
-**Each training script generates 2 types of outputs** : **(1)** a text file of the form ```./logs/[experiment_name].txt``` and a **(2)** TendorBoard event directory ```./TF_logs/[experiment_name]/``` containing various information of the evolution of the performance over the training and evaluation sets.
+**Each training script generates 2 types of outputs** : **(1)** a text file of the form ```./logs/[experiment_name].txt``` and a **(2)** TensorBoard event directory ```./TF_logs/[experiment_name]/``` which contains information on the evolution of the performance over the training and evaluation sets.
 
 ## Data
-The available data is the one used for training models, i.e., the dataset constructed through WOFOST executions. To ensure data anonymity, categorical variables that could reveal identity are transformed into ordinal variables. Similarly, the coordinates of the plots are shifted in latitude and longitude by an unknown amount.
+The available data is the one used for training models, i.e., the dataset constructed through WOFOST executions. To ensure data anonymity, categorical variables that could reveal identity are transformed into ordinal variables. Similarly, the coordinates of the plots are shifted in latitude and longitude by an unknown quantity.
 
 ### Setting up the repository for exectuting the scripts
-Due to github limitations, data should be downloaded and transformed using dedicated scripts
+Due to github limitations, data should be downloaded from hugging face :
 
 1. Download the dataset from : https://huggingface.co/datasets/JulAgu/PG_S2S-Crop_development
-2. Create a ```/data/``` directory in the root of the project and place the dataset inside it.
+2. Create a ```/data/``` directory in the root of the project and put the dataset inside.
