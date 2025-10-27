@@ -14,7 +14,7 @@ Each experiment has two corresponding files: a numbered python script that corre
 **Each training script generates 2 types of outputs** : **(1)** a text file of the form ```./logs/[experiment_name].txt``` and a **(2)** TensorBoard event directory ```./TF_logs/[experiment_name]/``` which contains information on the evolution of the performance over the training and evaluation sets.
 
 ## Data
-The available data is the one used for training models, i.e., the dataset constructed through WOFOST executions. To ensure data anonymity, categorical variables that could reveal identity are transformed into ordinal variables. Similarly, the coordinates of the plots are shifted in latitude and longitude by an unknown quantity.
+The dataset was constructed using WOFOST runs on real data from agricultural plots in northwestern France. To ensure data anonymity, categorical variables that could reveal identity are transformed into ordinal variables. Similarly, the coordinates of the plots are shifted in latitude and longitude by an unknown quantity.
 
 ### Setting up the repository for exectuting the scripts
 Due to github limitations, data should be downloaded from hugging face :
