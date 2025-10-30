@@ -19,10 +19,12 @@ if __name__ == "__main__":
 
     data = {}
     for array in ["static_data", "before_ts", "after_ts", "target_ts", "mask_target", "cat_dicos"]:
-        with open(f"data/big_agrial_ts_wise/{array}.pkl", "rb") as f:
+        with open(f"data/{array}.pkl", "rb") as f:
             data[array] = pickle.load(f)
     table = pq.read_table("data/info_ts.parquet")
     ids = table.to_pandas().index.to_list()
+
+    path_to_means_stds = "data/work_data/means_and_stds.pkl" # I know, it's not very elegant, but it avoids a major refactoring.
 
     ood_eliminate_train_val = pd.read_csv("data/ood/entire_ood_train.csv")["id"].to_list()
     ood_test = pd.read_csv("data/ood/entire_ood_test.csv")["id"].to_list()
@@ -58,6 +60,7 @@ if __name__ == "__main__":
     "num_epochs": 60,
     }
 
+
     train_dataset, val_dataset, test_dataset = create_ood_datasets(ids=ids,
                                                                    static_data=data["static_data"],
                                                                    before_ts=data["before_ts"],
@@ -68,7 +71,8 @@ if __name__ == "__main__":
                                                                    test_ids=ood_test,
                                                                    train_size=0.8,
                                                                    val_size=0.2,
-                                                                   raw_data_folder="data/big_agrial_ts_wise/"
+                                                                   raw_data_folder="data/",
+                                                                   means_and_stds_path=path_to_means_stds,
                                                                    )
     
     train_loader, val_loader, test_loader = create_dataloaders(train_dataset,
@@ -109,7 +113,7 @@ if __name__ == "__main__":
         monotonicity_bool=False,
         static_bool=False,
         dynamic_bool=False,
-        means_std_path="data/big_agrial_ts_wise/means_and_stds.pkl",
+        means_std_path=path_to_means_stds,
         device=device
     )
 

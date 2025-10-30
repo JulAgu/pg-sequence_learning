@@ -18,10 +18,12 @@ if __name__ == "__main__":
 
     data = {}
     for array in ["static_data", "before_ts", "after_ts", "target_ts", "mask_target", "cat_dicos"]:
-        with open(f"data/big_agrial_ts_wise/{array}.pkl", "rb") as f:
+        with open(f"data/{array}.pkl", "rb") as f:
             data[array] = pickle.load(f)
     table = pq.read_table("data/info_ts.parquet")
     ids = table.to_pandas().index.to_list()
+
+    path_to_means_stds = "data/work_data/means_and_stds_mlp.pkl" # I know, it's not very elegant, but it avoids a major refactoring.
 
     hyperparameters = {
     # Model parameters
@@ -46,9 +48,9 @@ if __name__ == "__main__":
                                                                mask_target=data["mask_target"],
                                                                train_size=0.6,
                                                                val_size=0.2,
-                                                               raw_data_folder="data/agrial_yield_mlp/",
+                                                               raw_data_folder="data/",
                                                                target_mode="yield",
-                                                               type_of_dataset="AgrialStaticDataset"
+                                                               means_and_stds_path=path_to_means_stds,
                                                                )
     
     train_loader, val_loader, test_loader = create_dataloaders(train_dataset,
@@ -73,7 +75,7 @@ if __name__ == "__main__":
         val_dataloader=val_loader,
         checkpoints_path=f"checkpoints/{EXPE_NAME}",
         logs_path=f"logs/{EXPE_NAME}",
-        means_std_path="data/agrial_yield_mlp/means_and_stds.pkl",
+        means_std_path=path_to_means_stds,
         device=device,
     )
 

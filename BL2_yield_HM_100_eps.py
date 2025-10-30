@@ -23,6 +23,8 @@ if __name__ == "__main__":
     table = pq.read_table("data/info_ts.parquet")
     ids = table.to_pandas().index.to_list()
 
+    path_to_means_stds = "data/work_data/means_and_stds_hm.pkl" # I know, it's not very elegant, but it avoids a major refactoring.
+
     hyperparameters = {
     # Model parameters
     "input_dim": 9, # Number of static numerical and categorical static features
@@ -49,9 +51,9 @@ if __name__ == "__main__":
                                                                mask_target=data["mask_target"],
                                                                train_size=0.6,
                                                                val_size=0.2,
-                                                               raw_data_folder="data/agrial_yield_mlp/",
+                                                               raw_data_folder="data/",
                                                                target_mode="yield",
-                                                               type_of_dataset="AgrialHybridDataset"
+                                                               means_and_stds_path=path_to_means_stds,
                                                                )
     
     train_loader, val_loader, test_loader = create_dataloaders(train_dataset,
@@ -72,14 +74,14 @@ if __name__ == "__main__":
 
     trainer = Trainer(
         exp_name=EXPE_NAME,
-        type_of_model="Hybrid",
+        type_of_model="MLP",
         model=model,
         hyperparameters=hyperparameters,
         train_dataloader=train_loader,
         val_dataloader=val_loader,
         checkpoints_path=f"checkpoints/{EXPE_NAME}",
         logs_path=f"logs/{EXPE_NAME}",
-        means_std_path="data/agrial_yield_mlp/means_and_stds.pkl",
+        means_std_path=path_to_means_stds,
         device=device,
     )
 

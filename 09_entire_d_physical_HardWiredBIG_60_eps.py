@@ -23,6 +23,8 @@ if __name__ == "__main__":
     table = pq.read_table("data/info_ts.parquet")
     ids = table.to_pandas().index.to_list()
 
+    path_to_means_stds = "data/work_data/means_and_stds.pkl" # I know, it's not very elegant, but it avoids a major refactoring.
+
     hyperparameters = {
     # Static encoder parameters
     "static_input_dim": 9,
@@ -57,6 +59,7 @@ if __name__ == "__main__":
     "gamma": 0.15,
     }
 
+
     train_dataset, val_dataset, test_dataset = create_datasets(ids=ids,
                                                                static_data=data["static_data"],
                                                                before_ts=data["before_ts"],
@@ -65,7 +68,8 @@ if __name__ == "__main__":
                                                                mask_target=data["mask_target"],
                                                                train_size=0.6,
                                                                val_size=0.2,
-                                                               raw_data_folder="data/big_agrial_ts_wise/"
+                                                               raw_data_folder="data/",
+                                                               means_and_stds_path=path_to_means_stds,
                                                                )
     
     train_loader, val_loader, test_loader = create_dataloaders(train_dataset,
@@ -106,7 +110,7 @@ if __name__ == "__main__":
         monotonicity_bool=False,
         static_bool=False,
         dynamic_bool=True,
-        means_std_path="data/big_agrial_ts_wise/means_and_stds.pkl",
+        means_std_path=path_to_means_stds,
         device=device
     )
 

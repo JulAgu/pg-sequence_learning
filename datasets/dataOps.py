@@ -9,9 +9,11 @@ def create_datasets(ids, static_data,
                     mask_target,
                     train_size=0.8,
                     val_size=0.1,
-                    raw_data_folder="data/agrial_ts_wise/",
+                    raw_data_folder="data/",
+                    means_and_stds_path=None,
                     target_mode=None,
-                    type_of_dataset = "AgrialDataset"):
+                    type_of_dataset = "AgrialDataset",
+                    entire_bool=True):
 
     total_size = len(static_data)
     train_size = int(total_size * train_size)
@@ -27,10 +29,11 @@ def create_datasets(ids, static_data,
                             target_ts[:train_size],
                             mask_target[:train_size],
                             target_mode=target_mode,
-                            work_directory=raw_data_folder
+                            means_and_stds_path=means_and_stds_path,
+                            entire_bool=entire_bool,
                             )
 
-    with open(f"{raw_data_folder}means_and_stds.pkl", "rb") as f:
+    with open(means_and_stds_path, "rb") as f:
         means_and_stds_dict = pickle.load(f)
 
     val_dataset = DataSet(ids[:train_size],
@@ -40,8 +43,9 @@ def create_datasets(ids, static_data,
                           target_ts[train_size:train_size + val_size],
                           mask_target[train_size:train_size + val_size],
                           target_mode=target_mode,
-                          work_directory=raw_data_folder,
+                          means_and_stds_path=means_and_stds_path,
                           means_and_stds_dict=means_and_stds_dict,
+                          entire_bool=entire_bool,
                           )
 
     test_dataset = DataSet(ids[:train_size],
@@ -51,8 +55,9 @@ def create_datasets(ids, static_data,
                            target_ts[train_size + val_size:],
                            mask_target[train_size + val_size:],
                            target_mode=target_mode,
-                           work_directory=raw_data_folder,
+                           means_and_stds_path=means_and_stds_path,
                            means_and_stds_dict=means_and_stds_dict,
+                           entire_bool=entire_bool,
                            )
 
     print(f"""
@@ -74,12 +79,13 @@ def create_ood_datasets(ids,
                         test_ids=None,
                         train_size=0.8,
                         val_size=0.1,
-                        raw_data_folder="data/agrial_ts_wise/",
+                        raw_data_folder="data/",
+                        means_and_stds_path=None,
                         target_mode=None,
                         type_of_dataset = "AgrialDataset"):
     """
     In this version train_size and val_size should add up to 1.0, because test set is extrictly defined.
-    TODO: Verify that this dataset creator is splitting correctly    """
+    """
 
     available_ids = set(ids) - set(ids_to_eliminate_of_train_validation)
     available_size = len(available_ids)
@@ -100,10 +106,10 @@ def create_ood_datasets(ids,
                             target_ts[available_indices[:train_size]],
                             mask_target[available_indices[:train_size]],
                             target_mode=target_mode,
-                            work_directory=raw_data_folder
+                            means_and_stds_path=means_and_stds_path
                             )
 
-    with open(f"{raw_data_folder}means_and_stds.pkl", "rb") as f:
+    with open(means_and_stds_path, "rb") as f:
         means_and_stds_dict = pickle.load(f)
 
     val_dataset = DataSet([ids[i] for i in available_indices[train_size:train_size + val_size]],
@@ -113,7 +119,7 @@ def create_ood_datasets(ids,
                           target_ts[available_indices[train_size:train_size + val_size]],
                           mask_target[available_indices[train_size:train_size + val_size]],
                           target_mode=target_mode,
-                          work_directory=raw_data_folder,
+                          means_and_stds_path=means_and_stds_path,
                           means_and_stds_dict=means_and_stds_dict,
                           )
     if test_ids is not None:
@@ -124,7 +130,7 @@ def create_ood_datasets(ids,
                                target_ts[test_indices],
                                mask_target[test_indices],
                                target_mode=target_mode,
-                               work_directory=raw_data_folder,
+                               means_and_stds_path=means_and_stds_path,
                                means_and_stds_dict=means_and_stds_dict,
                                )
     else:
@@ -135,7 +141,7 @@ def create_ood_datasets(ids,
                                target_ts[available_indices[train_size + val_size:]],
                                mask_target[available_indices[train_size + val_size:]],
                                target_mode=target_mode,
-                               work_directory=raw_data_folder,
+                               means_and_stds_path=means_and_stds_path,
                                means_and_stds_dict=means_and_stds_dict,
                                 )
 

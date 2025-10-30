@@ -20,4 +20,5 @@ The dataset was constructed using WOFOST runs on real data from agricultural plo
 Due to github limitations, data should be downloaded from hugging face :
 
 1. Download the dataset from : https://huggingface.co/datasets/JulAgu/PG_S2S-Crop_development
-2. Create a ```/data/``` directory in the root of the project and put the dataset inside.
+2. Create a ```data/``` directory in the root of the project and **put the dataset inside**.
+3. Create a sub-directory ```data/work_data/```, **leave it empty**, it is useful for drawing intermediate elements.

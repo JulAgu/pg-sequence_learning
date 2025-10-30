@@ -43,7 +43,7 @@ class IntegratedEvaluator:
             return np.mean(violations)
     
     def _biomass_violations(self, y_pred, mask_1d):
-    # It is necessary to review this. I think the behavior is absolutely not normal
+    # TODO: It is necessary to review this. I think the behavior is absolutely not normal
         mask_bool = mask_1d.astype(bool)
         violations = []
         y_tagp = y_pred[:, :, 2]
@@ -60,7 +60,7 @@ class IntegratedEvaluator:
             return np.mean(violations)
 
     def _assimialtion_violations(self, y_pred, mask_1d):
-    # It is necessary to review this. I think the behavior is absolutely not normal
+    # TODO: It is necessary to review this. I think the behavior is absolutely not normal
         mask_bool = mask_1d.astype(bool)
         violations = []
         y_asrc = y_pred[:, :, 8]
@@ -92,7 +92,6 @@ class IntegratedEvaluator:
             return np.mean(violations)
 
     def evaluate_per_variable(self):
-        # TODO: Review the violations counter
         results = {"Variable": [], "MAE": [], "RMSE": [], "R2": [], "MASE": [], "MonoViolation": [], "Biomass": [], "Assim": [], "Matter" : []}
 
         for v in range(self.V):
@@ -133,7 +132,6 @@ class IntegratedEvaluator:
         return df
 
     def evaluate_last_timestep(self):
-        #TODO: This is clearly uncorrect because it is not considering the mask correctly THE IDEA IS TO USE THE MASK TO FOUND THE CORRECT INDEX
         results = {"Variable": [], "MAE": [], "RMSE": [], "R2": []}
         t_last = self.T - 1
 

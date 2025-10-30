@@ -11,16 +11,20 @@ class AgrialDataset(Dataset):
                  after_ts,
                  target_ts,
                  mask_target,
-                 work_directory = "data/agrial_ts_wise/",
-                 target_mode=None,
-                 means_and_stds_dict=None):
+                 target_mode="ts",
+                 means_and_stds_path = None ,
+                 means_and_stds_dict=None,
+                 entire_bool=True):
 
         self.ids = ids
         self.static_data_cat = static_data[:,[0,1,2,6]]  # TODO: CAUTION ! This index could variate, they were extracted from the /home/agudeloacosta/HOMEdev/surrogate_WOFOST/Agrial_DL_df/scripts/big_ts_data_preparation_nb.ipynb notebook
         self.static_data_num = static_data[:,[3,4,5,7,8]]
         self.before_ts = before_ts
         self.after_ts = after_ts
-        self.target_ts = target_ts
+        if entire_bool:
+            self.target_ts = target_ts
+        else:
+            self.target_ts = target_ts[:,:,:4]
         self.mask_target = mask_target
 
         if means_and_stds_dict is not None:
@@ -53,7 +57,7 @@ class AgrialDataset(Dataset):
                 "target_ts_mean": self.target_ts_mean,
                 "target_ts_std": self.target_ts_std
             }
-            with open(f"{work_directory}means_and_stds.pkl", "wb") as f:
+            with open(means_and_stds_path, "wb") as f:
                 pickle.dump(self.dic_means_and_stds, f)
 
         # Normalize numeric features
@@ -86,7 +90,7 @@ class AgrialStaticDataset(Dataset):
                  target_ts,
                  mask_target,
                  target_mode="ts",
-                 work_directory = "data/agrial_ts_wise/",
+                 means_and_stds_path = None,
                  means_and_stds_dict=None):
 
         self.ids = ids
@@ -115,7 +119,7 @@ class AgrialStaticDataset(Dataset):
                 "static_data_num_mean": self.static_data_num_mean,
                 "static_data_num_std": self.static_data_num_std,
             }
-            with open(f"{work_directory}means_and_stds.pkl", "wb") as f:
+            with open(means_and_stds_path, "wb") as f:
                 pickle.dump(self.dic_means_and_stds, f)
 
         # Normalize numeric features
@@ -147,7 +151,7 @@ class AgrialHybridDataset(Dataset):
                  target_ts,
                  mask_target,
                  target_mode="ts",
-                 work_directory = "data/agrial_ts_wise/",
+                 means_and_stds_path = None,
                  means_and_stds_dict=None):
     
         '''
@@ -185,7 +189,7 @@ class AgrialHybridDataset(Dataset):
                 "meteo_ts_mean": self.meteo_ts_mean,
                 "meteo_ts_std": self.meteo_ts_std,
             }
-            with open(f"{work_directory}means_and_stds.pkl", "wb") as f:
+            with open(means_and_stds_path, "wb") as f:
                 pickle.dump(self.dic_means_and_stds, f)
 
         # Normalize numeric features
