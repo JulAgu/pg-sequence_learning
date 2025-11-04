@@ -12,12 +12,13 @@ class AgrialDataset(Dataset):
                  target_ts,
                  mask_target,
                  target_mode="ts",
-                 means_and_stds_path = None ,
+                 means_and_stds_path=None,
                  means_and_stds_dict=None,
                  entire_bool=True):
 
         self.ids = ids
         self.static_data_cat = static_data[:,[0,1,2,6]]
+        self.static_data_num = static_data[:,[3,4,5,7,8]]
         self.before_ts = before_ts
         self.after_ts = after_ts
         if entire_bool:
@@ -95,7 +96,6 @@ class AgrialStaticDataset(Dataset):
 
         self.ids = ids
         self.static_data_cat = static_data[:,[0,1,2,6]]
-        
         static_data_num = static_data[:,[3,4,5,7,8]]
         meteo_ts = np.concatenate((before_ts.reshape(before_ts.shape[0], -1), after_ts.reshape(after_ts.shape[0], -1)), axis=1)
         self.static_data_num = np.concatenate((static_data_num, meteo_ts), axis=1)
