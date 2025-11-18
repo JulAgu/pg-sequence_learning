@@ -1,9 +1,6 @@
 from tqdm import tqdm
 import torch
-import pickle
-from utils.schedulers import cosine_scheduler, teacher_forcing_decay
-from utils.losses import monotone_penalty, biomass_penalty, assimilation_penalty, dry_matter_increase_penalty
-from utils.utilities import save_checkpoint, load_checkpoint
+from utils.utilities import save_checkpoint
 from utils.tensorflowLogger import EpochWriter
 
 class Trainer(object):
