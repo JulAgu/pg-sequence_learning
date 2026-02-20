@@ -1,0 +1,14 @@
+base_run_id: "5c6f56f74c4146f4b2aedc6a9546816f"
+exp_name: 010_FSL
+means_and_stds_path: data/work_data/means_and_stds.pkl
+
+training:
+  initial_loss_coefficients:
+      alpha: 0.7
+      beta: 0.1
+      gamma: 0.1
+      delta: 0.1
+  static_physics: true
+  dynamic_physics: true
+  batch_size: 10
+  num_epochs: 10

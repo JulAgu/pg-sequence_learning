@@ -1,0 +1,9 @@
+exp_name: 04_entire_non_physical_HardWiredBIG
+means_and_stds_path: data/work_data/means_and_stds.pkl
+
+training:
+  initial_loss_coefficients:
+    alpha: 0
+    beta: 0
+    gamma: 0
+    delta: 0

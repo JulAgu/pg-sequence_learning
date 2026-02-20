@@ -1,0 +1,16 @@
+exp_name: 03_entire_non_physical_multiMLP
+means_and_stds_path: data/work_data/means_and_stds.pkl
+
+# As the monotonic indices are fixed on the default model config file.
+# It is enough to redefine the list as empty in the experiments concerned.
+model:
+  hyperparameters:
+    monotonic_indices: []
+
+training:
+  initial_loss_coefficients:
+    alpha: 0
+    beta: 0
+    gamma: 0
+    delta: 0
+

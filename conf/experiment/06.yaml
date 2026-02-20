@@ -1,0 +1,15 @@
+exp_name: 06_entire_d_physical_multiMLP
+means_and_stds_path: data/work_data/means_and_stds.pkl
+
+model:
+  hyperparameters:
+    monotonic_indices: []
+  
+training:
+  initial_loss_coefficients:
+    alpha: 0.9
+    beta: 0
+    gamma: 0
+    delta: 0.1
+  dynamic_physics: true
+

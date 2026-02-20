@@ -1,0 +1,41 @@
+hyperparameters:
+  # Static encoder parameters
+  static_input_dim: 9
+  embedding_dims: [150, 150, 150, 150]
+  hidden_dim_static_encoder: 256
+  # Dynamic encoder parameters
+  dynamic_input_dim: 7
+  hidden_dim_dynamic_encoder: 384
+  first_decoder_input_dim: 11
+  gru_encoder_num_layers: 2
+  # Decoder parameters
+  gru_input_dim: 11
+  gru_hidden_dim: 640  # 384 + 256
+  stepwise_input_dim: 7
+  main_hidden_dim: 256
+  mask_hidden_dim: 256
+  output_dim: 11
+  monotonic_indices: [0, 2, 3, 4, 5, 6]
+  gru_decoder_num_layers: 2
+
+
+encoder:
+  _target_: models.PGSeq2Seq.Encoder
+  static_input_dim: ${model.hyperparameters.static_input_dim}
+  static_hidden_dim: ${model.hyperparameters.hidden_dim_static_encoder}
+  embedding_dims: ${model.hyperparameters.embedding_dims}
+  dynamic_input_dim: ${model.hyperparameters.dynamic_input_dim}
+  dynamic_hidden_dim: ${model.hyperparameters.hidden_dim_dynamic_encoder}
+  first_decoder_input_dim: ${model.hyperparameters.first_decoder_input_dim}
+  gru_num_layers: ${model.hyperparameters.gru_encoder_num_layers}
+
+
+decoder:
+  _target_: models.PGSeq2Seq.Decoder
+  gru_input_dim: ${model.hyperparameters.gru_input_dim}
+  gru_hidden_dim: ${model.hyperparameters.gru_hidden_dim}
+  stepwise_input_dim: ${model.hyperparameters.stepwise_input_dim}
+  main_hidden_dim: ${model.hyperparameters.main_hidden_dim}
+  output_dim: ${model.hyperparameters.output_dim}
+  monotonic_indices: ${model.hyperparameters.monotonic_indices}
+  num_layers: ${model.hyperparameters.gru_decoder_num_layers}

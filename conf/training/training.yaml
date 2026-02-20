@@ -1,0 +1,48 @@
+train_size: 0.8
+val_size: 0.1
+batch_size: 64
+dataset_object:
+  _target_: datasets.dataOps.create_ood_datasets
+
+teacher_forcing_bool: false
+teacher_forcing_ratio: 0
+max_norm: 1.0
+learning_rate: 1e-4
+num_epochs: 60
+monotonicity: false
+static_physics: false
+dynamic_physics: false
+
+softadapt_bool: false
+softadapt_epochs_to_update: 5
+softadapt_object:
+  _target_: softadapt.LossWeightedSoftAdapt
+  beta: 0.1
+
+initial_loss_coefficients:
+  alpha: 0.7
+  beta: 0.1
+  gamma: 0.1
+  delta: 0.1
+
+optimizer:
+  _target_: torch.optim.Adam
+  lr: ${training.learning_rate}
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.OneCycleLR
+  max_lr: ${training.learning_rate}
+  epochs: ${training.num_epochs}
+
+trainer: 
+  _target_: engine.EntireTrainer.Trainer
+  learning_rate: ${training.learning_rate}
+  num_epochs: ${training.num_epochs}
+  teacher_forcing_bool: ${training.teacher_forcing_bool}
+  teacher_forcing_ratio: ${training.teacher_forcing_ratio}
+  clip_grad_max_norm: ${training.max_norm}
+  initial_loss_coefficients: ${training.initial_loss_coefficients}
+  monotonicity_bool: ${training.monotonicity}
+  static_bool: ${training.static_physics}
+  dynamic_bool: ${training.dynamic_physics}
+  mlflow_bool: true

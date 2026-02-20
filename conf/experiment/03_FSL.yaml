@@ -1,0 +1,16 @@
+base_run_id: e9508a4868604042b3ff2cb533a3892e
+exp_name: 03_FSL
+means_and_stds_path: data/work_data/means_and_stds.pkl
+
+model:
+  hyperparameters:
+    monotonic_indices: []
+
+training:
+  initial_loss_coefficients:
+    alpha: 0
+    beta: 0
+    gamma: 0
+    delta: 0
+  batch_size: 10
+  num_epochs: 10

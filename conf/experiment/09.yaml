@@ -1,0 +1,10 @@
+exp_name: 09_entire_d_physical_HardWiredBIG
+means_and_stds_path: data/work_data/means_and_stds.pkl
+  
+training:
+  initial_loss_coefficients:
+    alpha: 0.9
+    beta: 0
+    gamma: 0
+    delta: 0.1
+  dynamic_physics: true

@@ -1,0 +1,38 @@
+exp_name: 01_small_non_physical_multiMLP
+means_and_stds_path: data/work_data/means_and_stds_small.pkl
+
+# As the monotonic indices are fixed on the default model config file.
+# It is enough to redefine the list as empty in the experiments concerned.
+model:
+  hyperparameters:
+    # Static encoder parameters
+    static_input_dim: 9
+    embedding_dims: [100, 100, 100, 100]
+    hidden_dim_static_encoder: 128
+    # Dynamic encoder parameters
+    dynamic_input_dim: 7
+    hidden_dim_dynamic_encoder: 256
+    first_decoder_input_dim: 4
+    gru_encoder_num_layers: 2
+    # Decoder parameters
+    gru_input_dim: 4
+    gru_hidden_dim: 384  # 256 + 128
+    stepwise_input_dim: 7
+    main_hidden_dim: 128
+    mask_hidden_dim: 128
+    output_dim: 4
+    monotonic_indices: []
+    gru_decoder_num_layers: 2
+
+training:
+  num_epochs: 60
+  trainer: 
+    _target_: engine.SmallTrainer.Trainer
+    learning_rate: ${training.learning_rate}
+    num_epochs: ${training.num_epochs}
+    teacher_forcing_bool: ${training.teacher_forcing_bool}
+    teacher_forcing_ratio: ${training.teacher_forcing_ratio}
+    clip_grad_max_norm: ${training.max_norm}
+    monotonicity_bool: ${training.monotonicity}
+    mlflow_bool: true
+

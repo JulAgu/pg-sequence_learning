@@ -1,0 +1,15 @@
+defaults:
+  - model: model
+  - training: training
+  - _self_
+  - experiment@_global_: "04"
+
+exp_name: default
+means_and_stds_path: data/work_data/means_and_stds.pkl
+
+raw_data_folder: data/
+info_ts_file: info_ts_clean.parquet
+
+checkpoints_dir: checkpoints/
+logs_dir: logs/
+
