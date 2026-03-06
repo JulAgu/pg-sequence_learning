@@ -20,4 +20,5 @@ jupyter==1.1.1
 ipython==8.37.0
 geopandas==1.1.2
 mlflow==3.10.0
-git+https://github.com/dr-aheydari/SoftAdapt.git
+hydra-core==1.3.2
+git+https://github.com/dr-aheydari/SoftAdapt.git # The results of the paper don't use SoftAdapt, don't hesitate to comment this line in case of dependecies incompatibility
